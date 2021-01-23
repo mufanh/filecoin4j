@@ -3,6 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
     <groupId>com.github.mufanh</groupId>
     <name>filecoin4j</name>
     <artifactId>filecoin4j</artifactId>
@@ -13,6 +18,7 @@
     <url>https://github.com/mufanh/filecoin4j.git</url>
 
     <modules>
+        <module>filecoin4j-rpc</module>
     </modules>
 
     <properties>
@@ -22,12 +28,13 @@
 
         <!-- dependencies -->
         <lombok.version>1.18.12</lombok.version>
-        <jsonrpc4j.version>1.5.3</jsonrpc4j.version>
+        <junit.version>4.13.1</junit.version>
+        <jsonrpc4j.version>1.0.0-SNAPSHOT</jsonrpc4j.version>
 
         <!-- plugins -->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     </properties>
 
@@ -38,8 +45,16 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
+
             <dependency>
-                <groupId>com.github.briandilley.jsonrpc4j</groupId>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.mufanh</groupId>
                 <artifactId>jsonrpc4j</artifactId>
                 <version>${jsonrpc4j.version}</version>
             </dependency>
@@ -68,72 +83,80 @@
         </developer>
     </developers>
 
-    <profiles>
-        <profile>
-            <id>release</id>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- 生成java source.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <charset>UTF-8</charset>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <!-- -Xdoclint:none maven忽视javadoc过程中警告和错误 -->
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 生成asc 校验文件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <!-- 必须和配置中的gpg校验id一致 -->
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>${maven-compiler-plugin.version}</version>
-                        <configuration>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <source>${java.version}</source>
-                            <target>${java.version}</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>${maven-source-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>package</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>${maven-javadoc-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>package</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>${maven-gpg-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>sonatype</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>sonatype</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-    </profiles>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Maven Central Staging Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 </project>
