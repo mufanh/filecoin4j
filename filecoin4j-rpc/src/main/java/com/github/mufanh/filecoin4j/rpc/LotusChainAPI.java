@@ -9,7 +9,7 @@ import com.github.mufanh.jsonrpc4j.annotation.JsonRpcService;
  * @author xinquan.huangxq
  */
 @JsonRpcService
-public interface LotusAPI {
+public interface LotusChainAPI {
 
     @JsonRpcMethod("Filecoin.ChainHead")
     Call<TipSet> chainHead();
