@@ -39,6 +39,10 @@ public class LotusAPIFactory {
         return createLotusAPI(LotusStateAPI.class);
     }
 
+    public LotusWalletAPI createLotusWalletAPI() { return createLotusAPI(LotusWalletAPI.class); }
+
+    public LotusMpoolAPI createLotusMPoolAPI() { return createLotusAPI(LotusMpoolAPI.class); }
+
     private <T> T createLotusAPI(Class<T> apiClass) {
         return jsonRpcRetrofit.create(apiClass);
     }
