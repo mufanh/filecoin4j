@@ -87,4 +87,13 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         Response<List<Message>> response = lotusChainAPI.getParentMessages(cid).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
     }
+
+    @Test
+    public void getMessage() throws IOException {
+        Cid cid = new Cid();
+        cid.setStr("bafy2bzacebgzuqqkjtgauyg5f4wdgnovlyfzrlc67fjjmgxontek3unpu2fse");
+
+        Response<com.github.mufanh.filecoin4j.domain.types.Message> response = lotusChainAPI.getMessage(cid).execute();
+        System.out.println(JSONUtils.toJSONString(response.getResult()));
+    }
 }

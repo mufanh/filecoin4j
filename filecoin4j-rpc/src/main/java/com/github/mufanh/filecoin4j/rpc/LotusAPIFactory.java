@@ -24,6 +24,14 @@ public class LotusAPIFactory {
     }
 
     public LotusChainAPI createLotusChainAPI() {
-        return jsonRpcRetrofit.create(LotusChainAPI.class);
+        return createLotusAPI(LotusChainAPI.class);
+    }
+
+    public LotusGasAPI createLotusGasAPI() {
+        return createLotusAPI(LotusGasAPI.class);
+    }
+
+    private <T> T createLotusAPI(Class<T> apiClass) {
+        return jsonRpcRetrofit.create(apiClass);
     }
 }

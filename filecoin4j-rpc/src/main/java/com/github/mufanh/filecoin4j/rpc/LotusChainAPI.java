@@ -24,7 +24,7 @@ public interface LotusChainAPI {
     Call<BlockHeader> getBlock(Cid blockCid);
 
     @JsonRpcMethod(value = "Filecoin.ChainGetTipSet", paramsPassMode = JsonRpcParamsPassMode.ARRAY)
-    Call<TipSet> getTipSet(TipSetKey tipSetKey);
+    Call<TipSet> getTipSet(TipSetKey tsk);
 
     @JsonRpcMethod(value = "Filecoin.ChainGetBlockMessages", paramsPassMode = JsonRpcParamsPassMode.ARRAY)
     Call<BlockMessages> getBlockMessages(Cid blockCid);
@@ -34,4 +34,7 @@ public interface LotusChainAPI {
 
     @JsonRpcMethod(value = "Filecoin.ChainGetParentMessages", paramsPassMode = JsonRpcParamsPassMode.ARRAY)
     Call<List<Message>> getParentMessages(Cid blockCid);
+
+    @JsonRpcMethod(value = "Filecoin.ChainGetMessage", paramsPassMode = JsonRpcParamsPassMode.ARRAY)
+    Call<com.github.mufanh.filecoin4j.domain.types.Message> getMessage(Cid cid);
 }
