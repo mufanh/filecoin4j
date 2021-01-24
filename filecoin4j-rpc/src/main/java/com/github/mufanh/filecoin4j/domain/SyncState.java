@@ -1,25 +1,20 @@
-package com.github.mufanh.filecoin4j.domain.types;
+package com.github.mufanh.filecoin4j.domain;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author xinquan.huangxq
  */
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 @Data
-public class Actor implements Serializable {
+public class SyncState implements Serializable {
 
-    private Cid code;
+    private List<ActiveSyncs> activeSyncs;
 
-    private Cid head;
-
-    private Long nonce;
-
-    private BigInteger balance;
+    private Long vMApplied;
 }

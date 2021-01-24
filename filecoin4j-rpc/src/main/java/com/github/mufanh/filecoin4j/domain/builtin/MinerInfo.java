@@ -22,17 +22,17 @@ public class MinerInfo implements Serializable {
 
     private List<String> controlAddresses;
 
-    private long workerChangeEpoch;
+    private Long workerChangeEpoch;
 
     private String peerId;
 
     private List<String> multiaddrs;
 
-    private long sealProofType;
+    private Long sealProofType;
 
-    private long sectorSize;
+    private Long sectorSize;
 
-    private long windowPoStPartitionSectors;
+    private Long windowPoStPartitionSectors;
 
-    private long consensusFaultElapsed;
+    private Long consensusFaultElapsed;
 }

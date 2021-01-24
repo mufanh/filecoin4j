@@ -15,7 +15,7 @@ import java.math.BigInteger;
 @Data
 public class MessageReceipt implements Serializable {
 
-    private long exitCode;
+    private Long exitCode;
 
     @JsonProperty("Return")
     private String ret;

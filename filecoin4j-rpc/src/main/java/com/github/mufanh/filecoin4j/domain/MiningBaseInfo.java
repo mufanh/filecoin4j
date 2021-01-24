@@ -25,11 +25,11 @@ public class MiningBaseInfo implements Serializable {
 
     private String workerKey;
 
-    private long sectorSize;
+    private Long sectorSize;
 
     private BeaconEntry prevBeaconEntry;
 
     private List<BeaconEntry> beaconEntries;
 
-    private boolean eligibleForMining;
+    private Boolean eligibleForMining;
 }

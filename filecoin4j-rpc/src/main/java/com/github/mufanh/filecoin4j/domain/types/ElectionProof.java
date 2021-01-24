@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 public class ElectionProof implements Serializable {
 
-    private long winCount;
+    private Long winCount;
 
     private String vRFProof;
 }

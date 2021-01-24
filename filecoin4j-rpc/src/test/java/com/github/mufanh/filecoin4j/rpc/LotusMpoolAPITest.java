@@ -21,4 +21,12 @@ public class LotusMpoolAPITest extends AbstractLotusAPITest {
     @Test
     public void push() {
     }
+
+    @Test
+    public void testPush() {
+    }
+
+    @Test
+    public void pending() {
+    }
 }

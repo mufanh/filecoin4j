@@ -14,9 +14,9 @@ import java.io.Serializable;
 @Data
 public class SectorInfo implements Serializable {
 
-    private long sealProof;
+    private Long sealProof;
 
-    private long sectorNumber;
+    private Long sectorNumber;
 
     private Cid sealedCID;
 }

@@ -30,9 +30,9 @@ public class BlockHeader implements Serializable {
 
     private List<Cid> parents; // 5
 
-    private long parentWeight; // 6
+    private Long parentWeight; // 6
 
-    private long height; // 7
+    private Long height; // 7
 
     private Cid parentStateRoot; // 8
 
@@ -42,13 +42,13 @@ public class BlockHeader implements Serializable {
 
     private Signature bLSAggregate; // 11
 
-    private long timestamp; // 12
+    private Long timestamp; // 12
 
     private Signature blockSig; // 13
 
-    private long forkSignaling; // 14
+    private Long forkSignaling; // 14
 
     private BigInteger parentBaseFee; // 15
 
-    private boolean validated; // 16
+    private Boolean validated; // 16
 }

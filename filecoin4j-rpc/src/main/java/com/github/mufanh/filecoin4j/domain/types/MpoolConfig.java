@@ -2,24 +2,27 @@ package com.github.mufanh.filecoin4j.domain.types;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author xinquan.huangxq
  */
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 @Data
-public class Actor implements Serializable {
+public class MpoolConfig implements Serializable {
 
-    private Cid code;
+    private List<String> priorityAddrs;
 
-    private Cid head;
+    private Integer sizeLimitHigh;
 
-    private Long nonce;
+    private Integer sizeLimitLow;
 
-    private BigInteger balance;
+    private Double replaceByFeeRatio;
+
+    private Long pruneCooldown;
+
+    private Double gasLimitOverestimation;
 }

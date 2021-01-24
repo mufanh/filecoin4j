@@ -21,14 +21,14 @@ import java.math.BigInteger;
 public class Message implements Serializable {
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long version;
+    private Long version;
 
     private String to;
 
     private String from;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long nonce;
+    private Long nonce;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -47,7 +47,7 @@ public class Message implements Serializable {
     private BigInteger gasPremium;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long method;
+    private Long method;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String params;

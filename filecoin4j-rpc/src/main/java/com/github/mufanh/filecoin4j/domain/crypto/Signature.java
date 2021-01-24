@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 public class Signature implements Serializable {
 
-    private int type;
+    private Integer type;
 
     private String data;
 }

@@ -18,5 +18,5 @@ public class MinerPower implements Serializable {
 
     private Claim totalPower;
 
-    private boolean hasMinPower;
+    private Boolean hasMinPower;
 }

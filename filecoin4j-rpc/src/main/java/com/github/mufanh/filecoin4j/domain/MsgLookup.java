@@ -24,5 +24,5 @@ public class MsgLookup implements Serializable {
 
     private TipSetKey tipSet;
 
-    private long height;
+    private Long height;
 }

@@ -14,8 +14,8 @@ import java.io.Serializable;
 public class Claim implements Serializable {
 
     // Sum of raw byte power for a miner's sectors.
-    private long rawBytePower;
+    private Long rawBytePower;
 
     // Sum of quality adjusted power for a miner's sectors.
-    private long qualityAdjPower;
+    private Long qualityAdjPower;
 }

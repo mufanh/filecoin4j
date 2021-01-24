@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 public class BeaconEntry implements Serializable {
 
-    private long round;
+    private Long round;
 
     private String data;
 }

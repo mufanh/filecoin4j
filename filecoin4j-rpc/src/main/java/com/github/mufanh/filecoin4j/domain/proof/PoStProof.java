@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 public class PoStProof implements Serializable {
 
-    private int poStProof;
+    private Integer poStProof;
 
     private String proofBytes;
 }

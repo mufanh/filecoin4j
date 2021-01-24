@@ -19,5 +19,5 @@ public class TipSet implements Serializable {
 
     private List<BlockHeader> blocks;
 
-    private long height;
+    private Long height;
 }
