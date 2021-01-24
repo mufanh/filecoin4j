@@ -16,7 +16,7 @@ import java.math.BigInteger;
 public interface LotusGasAPI {
 
     @JsonRpcMethod("Filecoin.GasEstimateFeeCap")
-    Call<BigInteger> estimateFeeCap(Message message, long l, TipSetKey tsk);
+    Call<BigInteger> estimateFeeCap(Message message, long maxqueueblks, TipSetKey tsk);
 
     @JsonRpcMethod("Filecoin.GasEstimateGasLimit")
     Call<Long> estimateGasLimit(Message message, TipSetKey tsk);
