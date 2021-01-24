@@ -1,4 +1,4 @@
-package com.github.mufanh.filecoin4j.domain;
+package com.github.mufanh.filecoin4j.domain.types;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,9 +11,9 @@ import java.io.Serializable;
  */
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 @Data
-public class BeaconEntry implements Serializable {
+public class ElectionProof implements Serializable {
 
-    private long round;
+    private long winCount;
 
-    private String data;
+    private String vRFProof;
 }

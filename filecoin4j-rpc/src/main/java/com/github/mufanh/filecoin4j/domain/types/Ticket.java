@@ -1,4 +1,4 @@
-package com.github.mufanh.filecoin4j.domain;
+package com.github.mufanh.filecoin4j.domain.types;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

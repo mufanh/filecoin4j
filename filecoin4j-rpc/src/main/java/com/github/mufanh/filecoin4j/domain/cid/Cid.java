@@ -1,4 +1,4 @@
-package com.github.mufanh.filecoin4j.domain;
+package com.github.mufanh.filecoin4j.domain.cid;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -12,5 +12,5 @@ import java.io.Serializable;
 public class Cid implements Serializable {
 
     @JsonProperty("/")
-    private String id;
+    private String str;
 }
