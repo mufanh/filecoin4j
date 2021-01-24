@@ -1,7 +1,8 @@
-package com.github.mufanh.filecoin4j.domain.proof2;
+package com.github.mufanh.filecoin4j.domain.builtin;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,9 +12,11 @@ import java.io.Serializable;
  */
 @JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 @Data
-public class PoStProof implements Serializable {
+public class SectorInfo implements Serializable {
 
-    private int poStProof;
+    private long sealProof;
 
-    private String proofBytes;
+    private long sectorNumber;
+
+    private Cid sealedCID;
 }

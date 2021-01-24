@@ -13,4 +13,10 @@ public class Cid implements Serializable {
 
     @JsonProperty("/")
     private String str;
+
+    public static Cid of(String str) {
+        Cid result = new Cid();
+        result.str = str;
+        return result;
+    }
 }

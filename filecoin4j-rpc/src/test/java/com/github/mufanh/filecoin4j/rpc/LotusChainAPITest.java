@@ -42,20 +42,13 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getBlock() throws IOException {
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
-
-        Response<BlockHeader> response = lotusChainAPI.getBlock(cid).execute();
+        Response<BlockHeader> response = lotusChainAPI.getBlock(Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg")).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
     public void getTipSet() throws IOException {
-        TipSetKey tipSetKey = new TipSetKey();
-
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacec2s3vifae4es5sc7zcbdqd2ckig6c77qaovter4uniiskn2ngx3k");
-        tipSetKey.add(cid);
+        TipSetKey tipSetKey = TipSetKey.of("bafy2bzacec2s3vifae4es5sc7zcbdqd2ckig6c77qaovter4uniiskn2ngx3k");
 
         Response<TipSet> response = lotusChainAPI.getTipSet(tipSetKey).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
@@ -63,35 +56,31 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getBlockMessages() throws IOException {
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
+        Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
-        Response<BlockMessages> response = lotusChainAPI.getBlockMessages(cid).execute();
+        Response<BlockMessages> response = lotusChainAPI.getBlockMessages(blockCid).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
     public void getParentReceipts() throws IOException {
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
+        Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
-        Response<List<MessageReceipt>> response = lotusChainAPI.getParentReceipts(cid).execute();
+        Response<List<MessageReceipt>> response = lotusChainAPI.getParentReceipts(blockCid).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
     public void getParentMessages() throws IOException {
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
+        Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
-        Response<List<Message>> response = lotusChainAPI.getParentMessages(cid).execute();
+        Response<List<Message>> response = lotusChainAPI.getParentMessages(blockCid).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
     public void getMessage() throws IOException {
-        Cid cid = new Cid();
-        cid.setStr("bafy2bzacebgzuqqkjtgauyg5f4wdgnovlyfzrlc67fjjmgxontek3unpu2fse");
+        Cid cid = Cid.of("bafy2bzacebgzuqqkjtgauyg5f4wdgnovlyfzrlc67fjjmgxontek3unpu2fse");
 
         Response<com.github.mufanh.filecoin4j.domain.types.Message> response = lotusChainAPI.getMessage(cid).execute();
         System.out.println(JSONUtils.toJSONString(response.getResult()));

@@ -31,6 +31,14 @@ public class LotusAPIFactory {
         return createLotusAPI(LotusGasAPI.class);
     }
 
+    public LotusMinerAPI createLotusMinerAPI() {
+        return createLotusAPI(LotusMinerAPI.class);
+    }
+
+    public LotusStateAPI createLotusStateAPI() {
+        return createLotusAPI(LotusStateAPI.class);
+    }
+
     private <T> T createLotusAPI(Class<T> apiClass) {
         return jsonRpcRetrofit.create(apiClass);
     }
