@@ -5,11 +5,18 @@ import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author xinquan.huangxq
  */
 public class TipSetKey extends ArrayList<Cid> implements Serializable {
+
+    public static TipSetKey of(Collection<Cid> cids) {
+        TipSetKey result = new TipSetKey();
+        result.addAll(cids);
+        return result;
+    }
 
     public static TipSetKey of(Cid... cids) {
         TipSetKey result = new TipSetKey();
