@@ -47,7 +47,7 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
 
     @Test
     public void searchMsg() throws IOException {
-        Cid cid = Cid.of("bafy2bzacebtavrtw2gas3oep642zmtxntm6vlal2iaqfoxeheencfjccaohn2");
+        Cid cid = Cid.of("bafy2bzacedpbydb4invychu6edp7qzk3ygyy4ftneeaaikdvjsgseqyxh4pla");
 
         Response<MsgLookup> response = lotusStateAPI.searchMsg(cid).execute();
         System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));

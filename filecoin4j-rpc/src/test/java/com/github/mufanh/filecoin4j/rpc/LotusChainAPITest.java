@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author xinquan.huangxq
@@ -26,11 +27,13 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
     }
 
     @Test
-    public void asyncHead() throws IOException {
+    public void asyncHead() throws IOException, InterruptedException {
+        CountDownLatch cdl = new CountDownLatch(1);
         lotusChainAPI.head().enqueue(new Callback<TipSet>() {
             @Override
             public void onResponse(Call<TipSet> call, Response<TipSet> response) {
                 System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
+                cdl.countDown();
             }
 
             @Override
@@ -38,6 +41,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
                 t.printStackTrace(System.err);
             }
         });
+        cdl.await();
     }
 
     @Test
