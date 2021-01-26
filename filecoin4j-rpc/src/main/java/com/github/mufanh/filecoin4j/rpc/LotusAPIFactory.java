@@ -1,44 +1,18 @@
 package com.github.mufanh.filecoin4j.rpc;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.github.mufanh.jsonrpc4j.JsonBodyConverter;
-import com.github.mufanh.jsonrpc4j.JsonRpcRequest;
-import com.github.mufanh.jsonrpc4j.JsonRpcResponse;
-import com.github.mufanh.jsonrpc4j.JsonRpcRetrofit;
+import com.fasterxml.jackson.databind.*;
+import com.github.mufanh.jsonrpc4j.*;
 import okhttp3.Headers;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 
 /**
  * @author xinquan.huangxq
  */
 public class LotusAPIFactory {
-
-    private static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
-
-    private final JsonRpcRetrofit jsonRpcRetrofit;
-
-    private LotusAPIFactory(String apiGateway, String authorization) {
-        this.jsonRpcRetrofit = new JsonRpcRetrofit.Builder()
-                .httpUrl(apiGateway)
-                .jsonBodyConverter(new JsonBodyConverter() {
-                    @Override
-                    public String convertRequest(JsonRpcRequest request) {
-                        return LotusJSONUtils.toJSONString(request);
-                    }
-
-                    @Override
-                    public <T> JsonRpcResponse<T> convertResponse(String response) {
-                        return LotusJSONUtils.parseJSONObject(response, new TypeReference<JsonRpcResponse<T>>() {
-                        });
-                    }
-                })
-                .headers(Headers.of(HEADER_AUTHORIZATION, authorization))
-                .build();
-    }
 
     public static LotusAPIFactory of(String apiGateway, String authorization) {
         return new LotusAPIFactory(apiGateway, authorization);
@@ -76,45 +50,70 @@ public class LotusAPIFactory {
         return jsonRpcRetrofit.create(apiClass);
     }
 
-    static class LotusJSONUtils {
+    private static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
+
+    private final JsonRpcRetrofit jsonRpcRetrofit;
+
+    private LotusAPIFactory(String apiGateway, String authorization) {
+        this.jsonRpcRetrofit = new JsonRpcRetrofit.Builder()
+                .httpUrl(apiGateway)
+                .jsonBodyConverter(new LotusJsonBodyConverter())
+                .headers(Headers.of(HEADER_AUTHORIZATION, authorization))
+                .build();
+    }
+
+    private static class LotusJsonBodyConverter implements JsonBodyConverter {
 
         private static final ObjectMapper mapper = new ObjectMapper()
                 .configure(MapperFeature.USE_STD_BEAN_NAMING, true)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true);
 
-        private LotusJSONUtils() {
-            throw new AssertionError("Cannot be instantiated");
-        }
-
-        /**
-         * 将对象转换为json字符串，若转换异常，则返回null
-         *
-         * @param object
-         * @return
-         */
-        public static String toJSONString(Object object) {
+        @Override
+        public String convertRequest(JsonRpcRequest request) throws JsonConvertException {
             try {
-                return mapper.writeValueAsString(object);
+                return mapper.writeValueAsString(request);
             } catch (JsonProcessingException e) {
-                return null;
+                throw new JsonConvertException("JSON-RPC request convert error.", e);
             }
         }
 
-        /**
-         * 将json字符串转换为指定对象，若转换异常，则返回null
-         *
-         * @param json
-         * @param type
-         * @param <T>
-         * @return
-         */
-        public static <T> T parseJSONObject(String json, TypeReference<T> type) {
+        @Override
+        public <T> JsonRpcResponse<T> convertResponse(Type type, String response) throws JsonConvertException {
             try {
-                return mapper.readValue(json, type);
-            } catch (JsonProcessingException e) {
+                JsonRpcResponse<T> jsonRpcResponse = new JsonRpcResponse<>();
+
+                JsonNode jsonNode = mapper.readTree(response);
+                if (jsonNode == null) {
+                    return jsonRpcResponse;
+                }
+
+                JsonNode id = jsonNode.get("id");
+                if (id != null) {
+                    jsonRpcResponse.setId(id.asLong());
+                }
+
+                JsonNode jsonrpc = jsonNode.get("jsonrpc");
+                if (jsonrpc != null) {
+                    jsonRpcResponse.setJsonrpc(jsonrpc.asText());
+                }
+
+                jsonRpcResponse.setError(parseJsonNode(jsonNode.get("error"), JsonRpcResponse.Error.class));
+                jsonRpcResponse.setResult(parseJsonNode(jsonNode.get("result"), type));
+                return jsonRpcResponse;
+            } catch (Exception e) {
+                throw new JsonConvertException("JSON-RPC response convert error.", e);
+            }
+        }
+
+        private static <T> T parseJsonNode(JsonNode jsonNode, Type type) throws IOException {
+            if (jsonNode == null) {
                 return null;
             }
+            JsonParser parser = mapper.treeAsTokens(jsonNode);
+            JavaType javaType = mapper.getTypeFactory().constructType(type);
+            return mapper.readValue(parser, javaType);
         }
     }
+
 }

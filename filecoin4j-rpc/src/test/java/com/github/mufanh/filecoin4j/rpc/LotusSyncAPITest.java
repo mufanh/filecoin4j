@@ -6,8 +6,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
 /**
  * @author xinquan.huangxq
  */
@@ -18,6 +16,5 @@ public class LotusSyncAPITest extends AbstractLotusAPITest {
     @Test
     public void state() throws IOException {
         Response<SyncState> response = lotusSyncAPI.state().execute();
-        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 }
