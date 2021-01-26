@@ -24,7 +24,7 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
         TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
 
         Response<Actor> response = lotusStateAPI.getActor(address, tsk).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -33,7 +33,7 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
         TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
 
         Response<MinerInfo> response = lotusStateAPI.minerInfo(address, tsk).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
         TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
 
         Response<MinerPower> response = lotusStateAPI.minerPower(address, tsk).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -50,6 +50,6 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
         Cid cid = Cid.of("bafy2bzacebtavrtw2gas3oep642zmtxntm6vlal2iaqfoxeheencfjccaohn2");
 
         Response<MsgLookup> response = lotusStateAPI.searchMsg(cid).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 }

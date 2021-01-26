@@ -22,7 +22,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
     @Test
     public void head() throws IOException {
         Response<TipSet> response = lotusChainAPI.head().execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         lotusChainAPI.head().enqueue(new Callback<TipSet>() {
             @Override
             public void onResponse(Call<TipSet> call, Response<TipSet> response) {
-                System.out.println(JSONUtils.toJSONString(response.getResult()));
+                System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
             }
 
             @Override
@@ -43,7 +43,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
     @Test
     public void getBlock() throws IOException {
         Response<BlockHeader> response = lotusChainAPI.getBlock(Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg")).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         TipSetKey tipSetKey = TipSetKey.of("bafy2bzacec2s3vifae4es5sc7zcbdqd2ckig6c77qaovter4uniiskn2ngx3k");
 
         Response<TipSet> response = lotusChainAPI.getTipSet(tipSetKey).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
         Response<BlockMessages> response = lotusChainAPI.getBlockMessages(blockCid).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
         Response<List<MessageReceipt>> response = lotusChainAPI.getParentReceipts(blockCid).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         Cid blockCid = Cid.of("bafy2bzacecw2iqzbduscwk3pywnmkyq62izcpas32ovcnhkdvjd2athk3ebhg");
 
         Response<List<Message>> response = lotusChainAPI.getParentMessages(blockCid).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 
     @Test
@@ -83,6 +83,6 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         Cid cid = Cid.of("bafy2bzacebgzuqqkjtgauyg5f4wdgnovlyfzrlc67fjjmgxontek3unpu2fse");
 
         Response<com.github.mufanh.filecoin4j.domain.types.Message> response = lotusChainAPI.getMessage(cid).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 }

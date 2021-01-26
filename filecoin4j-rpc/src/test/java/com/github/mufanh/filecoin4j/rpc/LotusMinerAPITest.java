@@ -21,6 +21,6 @@ public class LotusMinerAPITest extends AbstractLotusAPITest {
         TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
 
         Response<MiningBaseInfo> response = lotusMinerAPI.getBaseInfo(address, chainEpoch, tsk).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 }

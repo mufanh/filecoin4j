@@ -30,6 +30,7 @@
         <lombok.version>1.18.12</lombok.version>
         <junit.version>4.13.1</junit.version>
         <jsonrpc4j.version>1.0.0-SNAPSHOT</jsonrpc4j.version>
+        <jackson.version>2.11.4</jackson.version>
 
         <!-- plugins -->
         <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
@@ -57,6 +58,12 @@
                 <groupId>com.github.mufanh</groupId>
                 <artifactId>jsonrpc4j</artifactId>
                 <version>${jsonrpc4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

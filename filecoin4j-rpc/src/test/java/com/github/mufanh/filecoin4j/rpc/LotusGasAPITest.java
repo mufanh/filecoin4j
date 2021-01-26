@@ -41,6 +41,6 @@ public class LotusGasAPITest extends LotusChainAPITest {
         TipSetKey tsk = null;
 
         Response<Message> response = lotusGasAPI.estimateMessageGas(message, messageSendSpec, tsk).execute();
-        System.out.println(JSONUtils.toJSONString(response.getResult()));
+        System.out.println(LotusAPIFactory.LotusJSONUtils.toJSONString(response.getResult()));
     }
 }
