@@ -1,7 +1,6 @@
 package com.github.mufanh.filecoin4j.domain.types;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.crypto.Signature;
 import com.github.mufanh.filecoin4j.domain.proof.PoStProof;
@@ -14,7 +13,6 @@ import java.util.List;
 /**
  * @author xinquan.huangxq
  */
-@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 @Data
 public class BlockHeader implements Serializable {
 

@@ -1,18 +1,25 @@
 package com.github.mufanh.filecoin4j.rpc;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.mufanh.jsonrpc4j.*;
 import okhttp3.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 
 /**
  * @author xinquan.huangxq
  */
 public class LotusAPIFactory {
+    private static final Logger logger = LoggerFactory.getLogger(LotusAPIFactory.class);
 
     public static LotusAPIFactory of(String apiGateway, String authorization) {
         return new LotusAPIFactory(apiGateway, authorization);
@@ -46,6 +53,10 @@ public class LotusAPIFactory {
         return createLotusAPI(LotusMpoolAPI.class);
     }
 
+    public LotusBeaconAPI createLotusBeaconAPI() {
+        return createLotusAPI(LotusBeaconAPI.class);
+    }
+
     private <T> T createLotusAPI(Class<T> apiClass) {
         return jsonRpcRetrofit.create(apiClass);
     }
@@ -65,14 +76,28 @@ public class LotusAPIFactory {
     private static class LotusJsonBodyConverter implements JsonBodyConverter {
 
         private static final ObjectMapper mapper = new ObjectMapper()
+                // 使用标准的字段名映射方式
                 .configure(MapperFeature.USE_STD_BEAN_NAMING, true)
+                // 忽略不存在的属性字段
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true);
+                // JSON结构全空，则报错
+                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, true)
+                // 忽略NULL字段
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                // 首字母大写
+                .setPropertyNamingStrategy(PropertyNamingStrategy.UPPER_CAMEL_CASE)
+                .registerModule(new SimpleModule()
+                        // BigInteger使用字符串序列化
+                        .addSerializer(BigInteger.class, ToStringSerializer.instance));
 
         @Override
         public String convertRequest(JsonRpcRequest request) throws JsonConvertException {
             try {
-                return mapper.writeValueAsString(request);
+                String requestJson = mapper.writeValueAsString(request);
+
+                logger.debug("JSON-RPC request : \n{}", requestJson);
+
+                return requestJson;
             } catch (JsonProcessingException e) {
                 throw new JsonConvertException("JSON-RPC request convert error.", e);
             }
@@ -80,6 +105,8 @@ public class LotusAPIFactory {
 
         @Override
         public <T> JsonRpcResponse<T> convertResponse(Type type, String response) throws JsonConvertException {
+            logger.debug("JSON-RPC response : \n{}", response);
+
             try {
                 JsonRpcResponse<T> jsonRpcResponse = new JsonRpcResponse<>();
 

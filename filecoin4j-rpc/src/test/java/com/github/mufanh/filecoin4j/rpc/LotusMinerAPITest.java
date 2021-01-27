@@ -3,6 +3,7 @@ package com.github.mufanh.filecoin4j.rpc;
 import com.github.mufanh.filecoin4j.domain.MiningBaseInfo;
 import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
 import com.github.mufanh.jsonrpc4j.Response;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,5 +22,6 @@ public class LotusMinerAPITest extends AbstractLotusAPITest {
         TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
 
         Response<MiningBaseInfo> response = lotusMinerAPI.getBaseInfo(address, chainEpoch, tsk).execute();
+        Assert.assertNotNull(response.getResult());
     }
 }

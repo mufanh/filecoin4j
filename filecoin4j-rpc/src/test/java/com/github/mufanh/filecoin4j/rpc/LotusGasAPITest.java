@@ -5,6 +5,7 @@ import com.github.mufanh.filecoin4j.domain.types.Message;
 import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
 import com.github.mufanh.jsonrpc4j.Call;
 import com.github.mufanh.jsonrpc4j.Response;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -41,5 +42,6 @@ public class LotusGasAPITest extends LotusChainAPITest {
         TipSetKey tsk = null;
 
         Response<Message> response = lotusGasAPI.estimateMessageGas(message, messageSendSpec, tsk).execute();
+        Assert.assertNotNull(response.getResult());
     }
 }

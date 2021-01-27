@@ -1,6 +1,7 @@
 package com.github.mufanh.filecoin4j.rpc;
 
 import com.github.mufanh.jsonrpc4j.Response;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class LotusMpoolAPITest extends AbstractLotusAPITest {
     @Test
     public void getNonce() throws IOException {
         Response<Long> response = lotusMPoolAPI.getNonce("f1rfw5ln22fw63llzqyhjrgmx572j5hquyvymmrpq").execute();
-        System.out.println(response.getResult());
+        Assert.assertNotNull(response.getResult());
     }
 
     @Test
