@@ -8,22 +8,20 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.mufanh.jsonrpc4j.*;
 import okhttp3.Headers;
+import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xinquan.huangxq
  */
 public class LotusAPIFactory {
     private static final Logger logger = LoggerFactory.getLogger(LotusAPIFactory.class);
-
-    public static LotusAPIFactory of(String apiGateway, String authorization) {
-        return new LotusAPIFactory(apiGateway, authorization);
-    }
 
     public LotusChainAPI createLotusChainAPI() {
         return createLotusAPI(LotusChainAPI.class);
@@ -61,14 +59,71 @@ public class LotusAPIFactory {
         return jsonRpcRetrofit.create(apiClass);
     }
 
+    public static class Builder {
+        private static final int DEFAULT_READ_TIMEOUT = 30;
+        private static final int DEFAULT_CONNECT_TIMEOUT = 5;
+        private static final int DEFAULT_WRITE_TIMEOUT = 30;
+
+        private String apiGateway;
+
+        private String authorization;
+
+        private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+
+        private int readTimeout = DEFAULT_READ_TIMEOUT;
+
+        private int writeTimeout = DEFAULT_WRITE_TIMEOUT;
+
+        public Builder apiGateway(String apiGateway) {
+            this.apiGateway = apiGateway;
+            return this;
+        }
+
+        public Builder authorization(String authorization) {
+            this.authorization = authorization;
+            return this;
+        }
+
+        public Builder connectTimeout(int connectTimeout) {
+            this.connectTimeout = connectTimeout;
+            return this;
+        }
+
+        public Builder readTimeout(int readTimeout) {
+            this.readTimeout = readTimeout;
+            return this;
+        }
+
+        public Builder writeTimeout(int writeTimeout) {
+            this.writeTimeout = writeTimeout;
+            return this;
+        }
+
+        public LotusAPIFactory build() {
+            if (apiGateway == null || apiGateway.length() == 0) {
+                throw new IllegalArgumentException("Lotus API网关地址不能为空.");
+            }
+            return new LotusAPIFactory(apiGateway, authorization,
+                    connectTimeout, readTimeout, writeTimeout);
+        }
+    }
+
     private static final String HEADER_AUTHORIZATION = "AUTHORIZATION";
 
     private final JsonRpcRetrofit jsonRpcRetrofit;
 
-    private LotusAPIFactory(String apiGateway, String authorization) {
+    private LotusAPIFactory(String apiGateway, String authorization,
+                            int connectTimeout, int readTimeout, int writeTimeout) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(connectTimeout, TimeUnit.SECONDS)
+                .readTimeout(readTimeout, TimeUnit.SECONDS)
+                .writeTimeout(writeTimeout, TimeUnit.SECONDS)
+                .build();
+
         this.jsonRpcRetrofit = new JsonRpcRetrofit.Builder()
                 .httpUrl(apiGateway)
                 .jsonBodyConverter(new LotusJsonBodyConverter())
+                .callFactory(client)
                 .headers(Headers.of(HEADER_AUTHORIZATION, authorization))
                 .build();
     }

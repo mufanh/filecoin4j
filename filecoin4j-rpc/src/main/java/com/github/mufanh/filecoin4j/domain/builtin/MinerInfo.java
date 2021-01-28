@@ -11,6 +11,8 @@ import java.util.List;
 @Data
 public class MinerInfo implements Serializable {
 
+    private String minerId;
+
     private String owner;
 
     private String worker;

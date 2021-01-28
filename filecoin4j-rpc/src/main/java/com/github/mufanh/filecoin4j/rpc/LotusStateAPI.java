@@ -4,6 +4,7 @@ import com.github.mufanh.filecoin4j.domain.MessageMatch;
 import com.github.mufanh.filecoin4j.domain.MinerPower;
 import com.github.mufanh.filecoin4j.domain.MsgLookup;
 import com.github.mufanh.filecoin4j.domain.builtin.MinerInfo;
+import com.github.mufanh.filecoin4j.domain.builtin.SectorOnChainInfo;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Actor;
 import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
@@ -28,6 +29,12 @@ public interface LotusStateAPI {
 
     @JsonRpcMethod("Filecoin.StateMinerPower")
     Call<MinerPower> minerPower(String address, TipSetKey tsk);
+
+    @JsonRpcMethod("Filecoin.StateSectorGetInfo")
+    Call<SectorOnChainInfo> sectorGetInfo(String address, Long sectorNumber, TipSetKey tsk);
+
+    @JsonRpcMethod("Filecoin.StateMinerActiveSectors")
+    Call<List<SectorOnChainInfo>> minerActiveSectors(String address, TipSetKey tsk);
 
     @JsonRpcMethod(value = "Filecoin.StateSearchMsg", paramsPassMode = JsonRpcParamsMode.ARRAY)
     Call<MsgLookup> searchMsg(Cid cid);

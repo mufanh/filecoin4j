@@ -4,6 +4,7 @@ import com.github.mufanh.filecoin4j.domain.MessageMatch;
 import com.github.mufanh.filecoin4j.domain.MinerPower;
 import com.github.mufanh.filecoin4j.domain.MsgLookup;
 import com.github.mufanh.filecoin4j.domain.builtin.MinerInfo;
+import com.github.mufanh.filecoin4j.domain.builtin.SectorOnChainInfo;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Actor;
 import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
@@ -23,28 +24,41 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getActor() throws IOException {
-        String address = "f065266";
-        TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
+        String address = "f01248";
 
-        Response<Actor> response = lotusStateAPI.getActor(address, tsk).execute();
+        Response<Actor> response = lotusStateAPI.getActor(address, null).execute();
         Assert.assertNotNull(response.getResult());
     }
 
     @Test
     public void minerInfo() throws IOException {
-        String address = "f065266";
-        TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
+        String address = "f01248";
 
-        Response<MinerInfo> response = lotusStateAPI.minerInfo(address, tsk).execute();
+        Response<MinerInfo> response = lotusStateAPI.minerInfo(address, null).execute();
         Assert.assertNotNull(response.getResult());
     }
 
     @Test
     public void minerPower() throws IOException {
-        String address = "f065266";
-        TipSetKey tsk = TipSetKey.of("bafy2bzacedssauumzfkfiohefymyrf7zc2mdotsu66vbvs7lgyjqhk3s5ro4g");
+        String address = "f01248";
 
-        Response<MinerPower> response = lotusStateAPI.minerPower(address, tsk).execute();
+        Response<MinerPower> response = lotusStateAPI.minerPower(address, null).execute();
+        Assert.assertNotNull(response.getResult());
+    }
+
+    @Test
+    public void sectorGetInfo() throws IOException {
+        String address = "f01248";
+
+        Response<SectorOnChainInfo> response = lotusStateAPI.sectorGetInfo(address, 1L, null).execute();
+        Assert.assertNotNull(response.getResult());
+    }
+
+    @Test
+    public void minerActiveSectors() throws IOException {
+        String address = "f01248";
+
+        Response<List<SectorOnChainInfo>> response = lotusStateAPI.minerActiveSectors(address, null).execute();
         Assert.assertNotNull(response.getResult());
     }
 
