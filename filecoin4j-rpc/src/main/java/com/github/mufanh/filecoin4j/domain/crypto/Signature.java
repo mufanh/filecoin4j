@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 public class Signature implements Serializable {
 
-    private Integer type;
+    private SigType type;
 
     private String data;
 }

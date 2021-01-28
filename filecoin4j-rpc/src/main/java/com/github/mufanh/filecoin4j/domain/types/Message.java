@@ -23,16 +23,12 @@ public class Message implements Serializable {
 
     private Long nonce;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigInteger value;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigInteger gasLimit;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigInteger gasFeeCap;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigInteger gasPremium;
 
     private Long method;

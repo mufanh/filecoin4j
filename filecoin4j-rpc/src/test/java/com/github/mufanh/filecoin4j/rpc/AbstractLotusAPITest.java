@@ -12,7 +12,7 @@ public class AbstractLotusAPITest {
             .apiGateway(API_GATEWAY)
             .authorization(AUTHORIZATION)
             .connectTimeout(5)
-            .readTimeout(30)
+            .readTimeout(60)
             .writeTimeout(30)
             .build();
 }

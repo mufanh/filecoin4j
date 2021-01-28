@@ -18,7 +18,7 @@ public class ActiveSyncs implements Serializable {
 
     private TipSet target;
 
-    private Integer stage;
+    private SyncStateStage stage;
 
     private Long height;
 

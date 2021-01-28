@@ -1,5 +1,6 @@
 package com.github.mufanh.filecoin4j.domain.builtin;
 
+import com.github.mufanh.filecoin4j.domain.abi.RegisteredSealProof;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,7 +28,7 @@ public class MinerInfo implements Serializable {
 
     private List<String> multiaddrs;
 
-    private Long sealProofType;
+    private RegisteredSealProof sealProofType;
 
     private Long sectorSize;
 

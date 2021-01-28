@@ -1,6 +1,5 @@
 package com.github.mufanh.filecoin4j.domain.types;
 
-import com.github.mufanh.filecoin4j.domain.types.Message;
 import lombok.Data;
 
 import java.io.Serializable;

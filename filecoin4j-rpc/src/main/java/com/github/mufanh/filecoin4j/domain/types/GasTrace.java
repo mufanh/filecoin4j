@@ -38,7 +38,6 @@ public class GasTrace implements Serializable {
     @JsonProperty("tt")
     private Long timeTaken;
 
-    //Extra     interface{}   `json:"ex,omitempty"`
     @JsonProperty("ex")
     private Object extra;
 }

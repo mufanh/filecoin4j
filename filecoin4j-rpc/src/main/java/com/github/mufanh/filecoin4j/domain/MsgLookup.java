@@ -18,7 +18,7 @@ public class MsgLookup implements Serializable {
 
     private MessageReceipt receipt;
 
-    private String returnDec;
+    private Object returnDec;
 
     private TipSetKey tipSet;
 

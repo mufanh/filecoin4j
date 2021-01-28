@@ -3,6 +3,7 @@ package com.github.mufanh.filecoin4j.domain;
 
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Message;
+import com.github.mufanh.filecoin4j.domain.types.SignedMessage;
 import lombok.Data;
 
 import java.util.List;

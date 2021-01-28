@@ -20,6 +20,9 @@ public class MpoolConfig implements Serializable {
 
     private Double replaceByFeeRatio;
 
+    /**
+     * 单位：ns
+     */
     private Long pruneCooldown;
 
     private Double gasLimitOverestimation;

@@ -1,5 +1,6 @@
 package com.github.mufanh.filecoin4j.rpc;
 
+import com.github.mufanh.filecoin4j.domain.InvocResult;
 import com.github.mufanh.filecoin4j.domain.MessageMatch;
 import com.github.mufanh.filecoin4j.domain.MinerPower;
 import com.github.mufanh.filecoin4j.domain.MsgLookup;
@@ -7,6 +8,7 @@ import com.github.mufanh.filecoin4j.domain.builtin.MinerInfo;
 import com.github.mufanh.filecoin4j.domain.builtin.SectorOnChainInfo;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Actor;
+import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
 import com.github.mufanh.jsonrpc4j.Response;
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +25,14 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
 
     @Test
     public void call() throws IOException {
+    }
+
+    @Test
+    public void replay() throws IOException {
+        TipSetKey tsk = null;
+        Response<InvocResult> response = lotusStateAPI.replay(
+                tsk, Cid.of("bafy2bzacedynmzm5wlgx53sjj2pwwezggudbvwlvrxiyzwy5xq7pxxmzlvzf2")).execute();
+        Assert.assertNotNull(response.getResult());
     }
 
     @Test

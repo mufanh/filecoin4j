@@ -16,13 +16,13 @@ import java.math.BigInteger;
 public interface LotusGasAPI {
 
     @JsonRpcMethod("Filecoin.GasEstimateFeeCap")
-    Call<BigInteger> estimateFeeCap(Message message, long maxqueueblks, TipSetKey tsk);
+    Call<BigInteger> estimateFeeCap(Message message, Long maxqueueblks, TipSetKey tsk);
 
     @JsonRpcMethod("Filecoin.GasEstimateGasLimit")
     Call<Long> estimateGasLimit(Message message, TipSetKey tsk);
 
     @JsonRpcMethod("Filecoin.GasEstimateGasPremium")
-    Call<BigInteger> estimateGasPremium(long nblocksincl, String sender, long gaslimit, TipSetKey tsk);
+    Call<BigInteger> estimateGasPremium(Long nblocksincl, String sender, Long gaslimit, TipSetKey tsk);
 
     @JsonRpcMethod("Filecoin.GasEstimateMessageGas")
     Call<Message> estimateMessageGas(Message message, MessageSendSpec messageSendSpec, TipSetKey tsk);

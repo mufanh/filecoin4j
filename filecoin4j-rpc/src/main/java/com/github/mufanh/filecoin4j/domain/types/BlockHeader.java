@@ -28,7 +28,7 @@ public class BlockHeader implements Serializable {
 
     private List<Cid> parents; // 5
 
-    private Long parentWeight; // 6
+    private BigInteger parentWeight; // 6
 
     private Long height; // 7
 

@@ -13,5 +13,5 @@ import com.github.mufanh.jsonrpc4j.annotation.JsonRpcService;
 public interface LotusBeaconAPI {
 
     @JsonRpcMethod(value = "Filecoin.BeaconGetEntry", paramsPassMode = JsonRpcParamsMode.ARRAY)
-    Call<BeaconEntry> getEntry(long chainEpoch);
+    Call<BeaconEntry> getEntry(Long chainEpoch);
 }

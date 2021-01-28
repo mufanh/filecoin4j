@@ -1,7 +1,7 @@
 package com.github.mufanh.filecoin4j.rpc;
 
 import com.github.mufanh.filecoin4j.domain.MessageSendSpec;
-import com.github.mufanh.filecoin4j.domain.SignedMessage;
+import com.github.mufanh.filecoin4j.domain.types.SignedMessage;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Message;
 import com.github.mufanh.filecoin4j.domain.types.MpoolConfig;
@@ -47,7 +47,7 @@ public interface LotusMpoolAPI {
     Call<List<SignedMessage>> batchPushMessage(List<Message> messages, MessageSendSpec spec);
 
     @JsonRpcMethod(value = "Filecoin.MpoolClear", paramsPassMode = JsonRpcParamsMode.ARRAY)
-    Call<Void> clear(boolean flag);
+    Call<Void> clear(Boolean flag);
 
     @JsonRpcMethod(value = "Filecoin.MpoolGetConfig")
     Call<MpoolConfig> getConfig();

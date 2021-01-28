@@ -1,5 +1,6 @@
 package com.github.mufanh.filecoin4j.domain.proof;
 
+import com.github.mufanh.filecoin4j.domain.abi.RegisteredPoStProof;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ import java.io.Serializable;
 @Data
 public class PoStProof implements Serializable {
 
-    private Integer poStProof;
+    private RegisteredPoStProof poStProof;
 
     private String proofBytes;
 }
