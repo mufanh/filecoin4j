@@ -7,7 +7,6 @@ import com.github.mufanh.filecoin4j.domain.builtin.MinerInfo;
 import com.github.mufanh.filecoin4j.domain.builtin.SectorOnChainInfo;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Actor;
-import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
 import com.github.mufanh.jsonrpc4j.Response;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,6 +20,10 @@ import java.util.List;
 public class LotusStateAPITest extends AbstractLotusAPITest {
 
     private final LotusStateAPI lotusStateAPI = lotusAPIFactory.createLotusStateAPI();
+
+    @Test
+    public void call() throws IOException {
+    }
 
     @Test
     public void getActor() throws IOException {
