@@ -31,7 +31,15 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
     public void replay() throws IOException {
         TipSetKey tsk = null;
         Response<InvocResult> response = lotusStateAPI.replay(
-                tsk, Cid.of("bafy2bzacedynmzm5wlgx53sjj2pwwezggudbvwlvrxiyzwy5xq7pxxmzlvzf2")).execute();
+                tsk, Cid.of("bafy2bzaceaq46krmjsgvndbj5euj7pykinsyoi33nd7enasr4anymz3ve4lfw")).execute();
+        Assert.assertNotNull(response.getResult());
+    }
+
+    @Test
+    public void searchMsg() throws IOException {
+        Cid cid = Cid.of("bafy2bzaceaq46krmjsgvndbj5euj7pykinsyoi33nd7enasr4anymz3ve4lfw");
+
+        Response<MsgLookup> response = lotusStateAPI.searchMsg(cid).execute();
         Assert.assertNotNull(response.getResult());
     }
 
@@ -72,14 +80,6 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
         String address = "f01248";
 
         Response<List<SectorOnChainInfo>> response = lotusStateAPI.minerActiveSectors(address, null).execute();
-        Assert.assertNotNull(response.getResult());
-    }
-
-    @Test
-    public void searchMsg() throws IOException {
-        Cid cid = Cid.of("bafy2bzacedpbydb4invychu6edp7qzk3ygyy4ftneeaaikdvjsgseqyxh4pla");
-
-        Response<MsgLookup> response = lotusStateAPI.searchMsg(cid).execute();
         Assert.assertNotNull(response.getResult());
     }
 
