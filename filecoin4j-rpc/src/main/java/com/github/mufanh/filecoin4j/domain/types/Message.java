@@ -25,7 +25,7 @@ public class Message implements Serializable {
 
     private BigInteger value;
 
-    private BigInteger gasLimit;
+    private Long gasLimit;
 
     private BigInteger gasFeeCap;
 
