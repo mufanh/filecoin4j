@@ -8,13 +8,23 @@ import com.github.mufanh.filecoin4j.domain.builtin.MinerInfo;
 import com.github.mufanh.filecoin4j.domain.builtin.SectorOnChainInfo;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
 import com.github.mufanh.filecoin4j.domain.types.Actor;
+import com.github.mufanh.filecoin4j.domain.types.Message;
+import com.github.mufanh.filecoin4j.domain.types.TipSet;
 import com.github.mufanh.filecoin4j.domain.types.TipSetKey;
+import com.github.mufanh.jsonrpc4j.Call;
+import com.github.mufanh.jsonrpc4j.Callback;
 import com.github.mufanh.jsonrpc4j.Response;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author xinquan.huangxq
@@ -22,6 +32,8 @@ import java.util.List;
 public class LotusStateAPITest extends AbstractLotusAPITest {
 
     private final LotusStateAPI lotusStateAPI = lotusAPIFactory.createLotusStateAPI();
+
+    private final LotusChainAPI lotusChainAPI = lotusAPIFactory.createLotusChainAPI();
 
     @Test
     public void call() throws IOException {
@@ -86,10 +98,64 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
     @Test
     public void listMessages() throws IOException {
         MessageMatch messageMatch = MessageMatch.of(
-                "f3vqnpfuda5mjmmye5nhtsyljquv5gokaf6f2lrpmn7mx2qffw4h4gqxsk4yfq2wjvbn6jd37bvw5g4fe4nyra",
-                "f0130791");
-
-        Response<List<Cid>> response = lotusStateAPI.listMessages(messageMatch, null, 445113L).execute();
+                "f3uxabcz2sudm4wyjosmtulk7p3yvy3dwbfi4lhgwzoflfdjzrasbriziyiz7hqonshtlfqhvlhyzgzm7i6noa",
+                null);
+        // 6907的tsk
+        TipSetKey tsk = TipSetKey.of("bafy2bzacebine7gvzfm4kejk6qoolspcrnqpoanwqjcj5qlhgp3japt74q2sc",
+                "bafy2bzacebfmegqd4yvqzxfbuxs7fbuuwklf5qmierzyhr3mhmlxmxhphk5du",
+                "bafy2bzacebhevfzjiqo4mj2ls22e6orcmw3hmeysqizutuhi6q3gxn2cizvxw",
+                "bafy2bzaceb2hgjqsdj5nbpfngjq6g7lcjhdoydx56rlodjwfcflvx3qxdfyce");
+        Response<List<Cid>> response = lotusStateAPI.listMessages(messageMatch, tsk, 456906L).execute();
         Assert.assertNotNull(response.getResult());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void listMessagesByHeight() throws IOException {
+        long currentHeight = 456906L;
+        MessageMatch messageMatch = MessageMatch.of(
+                "f3uxabcz2sudm4wyjosmtulk7p3yvy3dwbfi4lhgwzoflfdjzrasbriziyiz7hqonshtlfqhvlhyzgzm7i6noa",
+                "");
+
+        CompletableFuture<TipSet> tipSetFuture = call(() -> lotusChainAPI.getTipSetByHeight(currentHeight, null));
+        CompletableFuture<List<InvocResult>> resultFuture = tipSetFuture.thenCompose((ts) -> {
+            TipSetKey tsk = TipSetKey.of(ts.getCids());
+            CompletableFuture<List<Cid>> cidListFuture = call(() -> lotusStateAPI.listMessages(
+                    messageMatch, tsk, currentHeight));
+            return cidListFuture.thenCompose((cidList) -> {
+                CompletableFuture<?>[] futureArray = cidList.stream()
+                        .map((cid) -> call(() -> lotusStateAPI.replay(tsk, cid)))
+                        .toArray(CompletableFuture<?>[]::new);
+                CompletableFuture<Void> future = CompletableFuture.allOf(futureArray);
+                return future.thenApply(v -> Stream.of(futureArray)
+                        .map((e) -> (CompletableFuture<InvocResult>) e)
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()));
+            });
+        });
+        List<InvocResult> result = resultFuture.join();
+        Assert.assertNotNull(result);
+    }
+
+    private static <T> CompletableFuture<T> call(Supplier<Call<T>> call) {
+        CompletableFuture<T> result = new CompletableFuture<>();
+        call.get().enqueue(new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                if (response == null
+                        || response.getRawResponse() == null
+                        || !response.getRawResponse().isSuccessful()) {
+                    result.completeExceptionally(new IOException("执行Lotus API调用异常，本次处理失败"));
+                    return;
+                }
+                result.complete(response.getResult());
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                result.completeExceptionally(new IOException("执行Lotus API调用异常，本次处理失败", t));
+            }
+        });
+        return result;
     }
 }
