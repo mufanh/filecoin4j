@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.mufanh.jsonrpc4j.*;
 import okhttp3.Headers;
@@ -180,8 +181,19 @@ public class LotusAPIFactory {
                     jsonRpcResponse.setJsonrpc(jsonrpc.asText());
                 }
 
-                jsonRpcResponse.setError(parseJsonNode(jsonNode.get("error"), JsonRpcResponse.Error.class));
-                jsonRpcResponse.setResult(parseJsonNode(jsonNode.get("result"), type));
+                JsonNode error = jsonNode.get("error");
+                if (error != null) {
+                    JsonRpcResponse.Error e = new JsonRpcResponse.Error();
+                    e.setCode(error.get("code").asInt(0));
+                    e.setMessage(error.get("message").asText());
+                    JsonNode data = error.get("data");
+                    if (data != null) {
+                        e.setData(data.toString());
+                    }
+                    jsonRpcResponse.setError(e);
+                } else {
+                    jsonRpcResponse.setResult(parseJsonNode(jsonNode.get("result"), type));
+                }
                 return jsonRpcResponse;
             } catch (Exception e) {
                 throw new JsonConvertException("JSON-RPC response convert error.", e);
