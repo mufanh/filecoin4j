@@ -120,18 +120,22 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
                     .findFirst()
                     .get()
                     .getParents();
-            // 每个都返回List<Message>
+            System.out.println(cidList);
+
+           /* // 每个都返回List<Message> 其实随便选一个cidList获取的消息一样，因为这些cidList对应的parent一致
             CompletableFuture<?>[] futureArray = cidList.stream()
                     .map((cid) -> call(() -> lotusChainAPI.getParentMessages(cid)))
                     .toArray(CompletableFuture<?>[]::new);
             CompletableFuture<Void> future = CompletableFuture.allOf(futureArray);
             // 返回所有block的List<Message>
             return future.thenApply(v -> Stream.of(futureArray)
-                    .map((e) -> (CompletableFuture<List<Message>>) e)
-                    .flatMap(e -> e.join().stream())
-                    .collect(Collectors.toList()));
+                    .map((e) -> (List<Message>) e.join())
+                    .peek(System.out::println)
+                    .flatMap(e -> e.stream())
+                    .collect(Collectors.toList()));*/
+            return call(() -> lotusChainAPI.getParentMessages(cidList.get(0)));
         });
-        CompletableFuture<List<MsgLookup>> lookupsFuture = messagesFuture.thenCompose((messages) -> {
+        /*CompletableFuture<List<MsgLookup>> lookupsFuture = messagesFuture.thenCompose((messages) -> {
             CompletableFuture<?>[] futureArray = messages.stream()
                     .map(Message::getCid)
                     .map((cid) -> call(() -> lotusStateAPI.searchMsg(cid)))
@@ -142,8 +146,14 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
                     .map(CompletableFuture::join)
                     .collect(Collectors.toList()));
         });
-        Assert.assertNotNull(messagesFuture.join());
         Assert.assertNotNull(lookupsFuture.join());
+        */
+
+        List<Message> messages = messagesFuture.join();
+        Assert.assertNotNull(messages);
+
+        CompletableFuture<MsgLookup> msgLookupFuture = call(() -> lotusStateAPI.searchMsg(messages.get(0).getCid()));
+        Assert.assertNotNull(msgLookupFuture.join());
     }
 
     @SuppressWarnings("unchecked")
