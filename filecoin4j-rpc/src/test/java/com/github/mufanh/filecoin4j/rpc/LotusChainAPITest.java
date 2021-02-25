@@ -3,6 +3,7 @@ package com.github.mufanh.filecoin4j.rpc;
 import com.github.mufanh.filecoin4j.domain.*;
 import com.github.mufanh.filecoin4j.domain.Message;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
+import com.github.mufanh.filecoin4j.domain.exitcode.ExitCode;
 import com.github.mufanh.filecoin4j.domain.types.*;
 import com.github.mufanh.jsonrpc4j.Call;
 import com.github.mufanh.jsonrpc4j.Callback;
@@ -12,7 +13,16 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author xinquan.huangxq
@@ -20,6 +30,8 @@ import java.util.concurrent.CountDownLatch;
 public class LotusChainAPITest extends AbstractLotusAPITest {
 
     private final LotusChainAPI lotusChainAPI = lotusAPIFactory.createLotusChainAPI();
+
+    private final LotusStateAPI lotusStateAPI = lotusAPIFactory.createLotusStateAPI();
 
     @Test
     public void head() throws IOException {
@@ -70,7 +82,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getBlockMessages() throws IOException {
-        Cid blockCid = Cid.of("bafy2bzacechdndwv3k6zripfpxm4jtwdvqnzlp6uvldccwf6cycmd2w3elvfc");
+        Cid blockCid = Cid.of("bafy2bzacebine7gvzfm4kejk6qoolspcrnqpoanwqjcj5qlhgp3japt74q2sc");
 
         Response<BlockMessages> response = lotusChainAPI.getBlockMessages(blockCid).execute();
         Assert.assertNotNull(response.getResult());
@@ -114,5 +126,61 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
         Response<TipSet> response3 = lotusChainAPI.getTipSetByHeight(null, tsk).execute();
         Assert.assertNotNull(response3.getResult());
+    }
+
+    @Test
+    public void getMessagesByHeight() throws ExecutionException, InterruptedException {
+        List<com.github.mufanh.filecoin4j.domain.types.Message> messages
+                = getMessagesFutureByHeight(456906L).get();
+    }
+
+    private CompletableFuture<List<com.github.mufanh.filecoin4j.domain.types.Message>> getMessagesFutureByHeight(long height) {
+        // 根据固定高度拉去TipSet
+        CompletableFuture<TipSet> tipSetFuture = call(() -> lotusChainAPI.getTipSetByHeight(height, null));
+        // 获取所有状态OK的消息
+        return tipSetFuture.thenCompose((ts) -> {
+            // 获取当前高度的区块
+            List<Cid> blockCids = ts.getCids();
+            // 获取每个区块的消息列表
+            CompletableFuture<?>[] futureArray =
+                    blockCids.stream()
+                            .map((blockCid) -> call(() -> lotusChainAPI.getBlockMessages(blockCid)))
+                            .toArray(CompletableFuture<?>[]::new);
+            CompletableFuture<Void> future = CompletableFuture.allOf(futureArray);
+            return future.thenApply(v -> Stream.of(futureArray)
+                    .map(CompletableFuture::join)
+                    .map(e -> (BlockMessages) e)
+                    .flatMap(e -> Stream.concat(e.getBlsMessages().stream(),
+                            e.getSecpkMessages().stream().map(SignedMessage::getMessage)))
+                    .filter(distinctByKey(com.github.mufanh.filecoin4j.domain.types.Message::getCid)) // 去重
+                    .collect(Collectors.toList()));
+        });
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private static <T> CompletableFuture<T> call(Supplier<Call<T>> call) {
+        CompletableFuture<T> result = new CompletableFuture<>();
+        call.get().enqueue(new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                if (response == null
+                        || response.getRawResponse() == null
+                        || !response.getRawResponse().isSuccessful()) {
+                    result.completeExceptionally(new IOException("执行Lotus API调用异常，本次处理失败"));
+                    return;
+                }
+                result.complete(response.getResult());
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                result.completeExceptionally(new IOException("执行Lotus API调用异常，本次处理失败", t));
+            }
+        });
+        return result;
     }
 }

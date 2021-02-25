@@ -37,15 +37,18 @@ public class LotusStateAPITest extends AbstractLotusAPITest {
 
     @Test
     public void replay() throws IOException {
-        TipSetKey tsk = null;
+        TipSetKey tsk = TipSetKey.of("bafy2bzacebine7gvzfm4kejk6qoolspcrnqpoanwqjcj5qlhgp3japt74q2sc"
+                , "bafy2bzacebfmegqd4yvqzxfbuxs7fbuuwklf5qmierzyhr3mhmlxmxhphk5du"
+                , "bafy2bzacebhevfzjiqo4mj2ls22e6orcmw3hmeysqizutuhi6q3gxn2cizvxw"
+                , "bafy2bzaceb2hgjqsdj5nbpfngjq6g7lcjhdoydx56rlodjwfcflvx3qxdfyce");
         Response<InvocResult> response = lotusStateAPI.replay(
-                tsk, Cid.of("bafy2bzaceaq46krmjsgvndbj5euj7pykinsyoi33nd7enasr4anymz3ve4lfw")).execute();
+                tsk, Cid.of("bafy2bzacedpeiqbrzuozu3l2x32unf656wye7vrz2umaeedeux223v7fpf7b4")).execute();
         Assert.assertNotNull(response.getResult());
     }
 
     @Test
     public void searchMsg() throws IOException {
-        Cid cid = Cid.of("bafy2bzaceaq46krmjsgvndbj5euj7pykinsyoi33nd7enasr4anymz3ve4lfw");
+        Cid cid = Cid.of("bafy2bzaceb2dimrqnze7dtt3wzmtfjxc43hlrvcxoyc3wwhtkxarn5ct3svgu");
 
         Response<MsgLookup> response = lotusStateAPI.searchMsg(cid).execute();
         Assert.assertNotNull(response.getResult());
