@@ -1,5 +1,7 @@
 package com.github.mufanh.filecoin4j.rpc;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.mufanh.filecoin4j.domain.*;
 import com.github.mufanh.filecoin4j.domain.Message;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
@@ -8,16 +10,13 @@ import com.github.mufanh.filecoin4j.domain.types.*;
 import com.github.mufanh.jsonrpc4j.Call;
 import com.github.mufanh.jsonrpc4j.Callback;
 import com.github.mufanh.jsonrpc4j.Response;
+import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -82,10 +81,31 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getBlockMessages() throws IOException {
-        Cid blockCid = Cid.of("bafy2bzacebine7gvzfm4kejk6qoolspcrnqpoanwqjcj5qlhgp3japt74q2sc");
+        Cid blockCid = Cid.of("bafy2bzacebhp7aweqqvurhypprqtqk75b7q2xs2lt5abi7hu7lsgepb5rlfck");
 
         Response<BlockMessages> response = lotusChainAPI.getBlockMessages(blockCid).execute();
         Assert.assertNotNull(response.getResult());
+
+        BlockMessages blockMessages = response.getResult();
+        List<Cid> cids1 = blockMessages.getBlsMessages()
+                .stream()
+                .map(com.github.mufanh.filecoin4j.domain.types.Message::getCid)
+                .collect(Collectors.toList());
+        List<Cid> cids2 = blockMessages.getSecpkMessages()
+                .stream()
+                .map(signedMessage -> signedMessage.getMessage().getCid())
+                .collect(Collectors.toList());
+        List<Cid> cids = blockMessages.getCids();
+        for (Cid cid : cids1) {
+            if (!cids.contains(cid)) {
+                System.out.println(cids1.indexOf(cid));
+            }
+        }
+        for (Cid cid : cids2) {
+            if (!cids.contains(cid)) {
+                System.out.println(cids2.indexOf(cid));
+            }
+        }
     }
 
     @Test
@@ -106,7 +126,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getMessage() throws IOException {
-        Cid cid = Cid.of("bafy2bzacebgzuqqkjtgauyg5f4wdgnovlyfzrlc67fjjmgxontek3unpu2fse");
+        Cid cid = Cid.of("bafy2bzaceadp7suv63bi3p2jtl633hfqrfufiujc2srmouwplubfrqyntnly2");
 
         Response<com.github.mufanh.filecoin4j.domain.types.Message> response = lotusChainAPI.getMessage(cid).execute();
         Assert.assertNotNull(response.getResult());
@@ -130,11 +150,19 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
 
     @Test
     public void getMessagesByHeight() throws ExecutionException, InterruptedException {
-        List<com.github.mufanh.filecoin4j.domain.types.Message> messages
-                = getMessagesFutureByHeight(456906L).get();
+        long height = 543360L;
+        Map<Cid, com.github.mufanh.filecoin4j.domain.types.Message> messages
+                = getMessagesFutureByHeight(height).get();
+        Set<Cid> cids = getMessageCidsFutureByHeight(height).get();
+        for (Cid cid : cids) {
+            com.github.mufanh.filecoin4j.domain.types.Message message = messages.get(cid);
+            if (!message.getCid().getStr().equals(cid.getStr())) {
+                System.out.println(cid.getStr() + ":" + JSON.toJSONString(message));
+            }
+        }
     }
 
-    private CompletableFuture<List<com.github.mufanh.filecoin4j.domain.types.Message>> getMessagesFutureByHeight(long height) {
+    private CompletableFuture<Set<Cid>> getMessageCidsFutureByHeight(long height) {
         // 根据固定高度拉去TipSet
         CompletableFuture<TipSet> tipSetFuture = call(() -> lotusChainAPI.getTipSetByHeight(height, null));
         // 获取所有状态OK的消息
@@ -150,16 +178,64 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
             return future.thenApply(v -> Stream.of(futureArray)
                     .map(CompletableFuture::join)
                     .map(e -> (BlockMessages) e)
-                    .flatMap(e -> Stream.concat(e.getBlsMessages().stream(),
-                            e.getSecpkMessages().stream().map(SignedMessage::getMessage)))
-                    .filter(distinctByKey(com.github.mufanh.filecoin4j.domain.types.Message::getCid)) // 去重
-                    .collect(Collectors.toList()));
+                    .flatMap(e -> e.getCids().stream())
+                    .collect(Collectors.toSet()));
         });
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> seen = ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
+    }
+
+    private CompletableFuture<Map<Cid, com.github.mufanh.filecoin4j.domain.types.Message>> getMessagesFutureByHeight(long height) {
+        // 根据固定高度拉去TipSet
+        CompletableFuture<TipSet> tipSetFuture = call(() -> lotusChainAPI.getTipSetByHeight(height, null));
+        // 获取所有状态OK的消息
+        return tipSetFuture.thenCompose((ts) -> {
+            // 获取当前高度的区块
+            List<Cid> blockCids = ts.getCids();
+            // 获取每个区块的消息列表
+            CompletableFuture<?>[] futureArray =
+                    blockCids.stream()
+                            .map((blockCid) -> call(() -> lotusChainAPI.getBlockMessages(blockCid)))
+                            .toArray(CompletableFuture<?>[]::new);
+            CompletableFuture<Void> future = CompletableFuture.allOf(futureArray);
+            return future.thenApply(v -> Stream.of(futureArray)
+                    .map(CompletableFuture::join)
+                    .map(e -> (BlockMessages) e)
+                    .flatMap(e -> {
+                        List<Cid> cids = e.getCids();
+                        List<com.github.mufanh.filecoin4j.domain.types.Message> blsMessages = e.getBlsMessages();
+                        List<com.github.mufanh.filecoin4j.domain.types.Message> signedMessages = e.getSecpkMessages()
+                                .stream()
+                                .map(SignedMessage::getMessage)
+                                .collect(Collectors.toList());
+                        Stream.Builder<Pair<Cid, com.github.mufanh.filecoin4j.domain.types.Message>> builder = Stream.builder();
+                        for (int i = 0; i < blsMessages.size(); ++i) {
+                            builder.add(new Pair<>(cids.get(i), blsMessages.get(i)));
+                        }
+                        for (int i = 0; i < signedMessages.size(); ++i) {
+                            builder.add(new Pair<>(cids.get(i + blsMessages.size()), signedMessages.get(i)));
+                        }
+                        return builder.build();
+                    })
+                    .filter(distinctByKey(Pair::getKey))
+                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
+        });
+    }
+
+    private static <T> T syncCall(Supplier<Call<T>> call, int times) {
+        int retry = 0;
+        do {
+            try {
+                return call(call).get();
+            } catch (Exception e) {
+                ++retry;
+            }
+        } while (retry < times);
+
+        throw new RuntimeException("重复执行" + times + "次，还是执行失败");
     }
 
     private static <T> CompletableFuture<T> call(Supplier<Call<T>> call) {
