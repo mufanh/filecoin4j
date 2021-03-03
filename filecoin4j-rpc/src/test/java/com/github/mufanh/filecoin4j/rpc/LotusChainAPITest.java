@@ -162,6 +162,43 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         }
     }
 
+    @Test
+    public void getMessageBlockMsg() throws ExecutionException, InterruptedException, IOException {
+        Cid cid = Cid.of("bafy2bzacebdlxmab2o3jcxtwvjmglksy66dujeijmks34565scbu37jnxhxhc");
+
+        CompletableFuture<List<Cid>> resultFuture = getMessageBlockCids(cid);
+        System.out.println(resultFuture.get());
+    }
+
+    private CompletableFuture<List<Cid>> getMessageBlockCids(Cid cid) {
+        CompletableFuture<MsgLookup> msgLookupFuture = call(() -> lotusStateAPI.searchMsg(cid));
+        CompletableFuture<TipSet> tsFuture = msgLookupFuture.thenCompose(msgLookup ->
+                call(() -> lotusChainAPI.getTipSetByHeight(msgLookup.getHeight() - 1, msgLookup.getTipSet())));
+        return tsFuture.thenCompose(ts -> {
+            // 并不是所有block都包含该消息，但是也可能不值一个
+            List<Cid> blockCids = ts.getCids();
+            // 获取每个区块的消息列表
+            CompletableFuture<?>[] futureArray =
+                    blockCids.stream()
+                            .map((blockCid) -> call(() -> lotusChainAPI.getBlockMessages(blockCid)))
+                            .toArray(CompletableFuture<?>[]::new);
+            CompletableFuture<Void> future = CompletableFuture.allOf(futureArray);
+            CompletableFuture<List<Boolean>> containFuture = future.thenApply(v -> Stream.of(futureArray)
+                    .map(CompletableFuture::join)
+                    .map(e -> (BlockMessages) e)
+                    .map(e -> e.getCids().contains(cid))
+                    .collect(Collectors.toList()));
+            List<Boolean> contains = containFuture.join();
+            List<Cid> result = new ArrayList<>();
+            for (int i = 0; i < contains.size(); ++i) {
+                if (Boolean.TRUE.equals(contains.get(i))) {
+                    result.add(blockCids.get(i));
+                }
+            }
+            return CompletableFuture.completedFuture(result);
+        });
+    }
+
     private CompletableFuture<Set<Cid>> getMessageCidsFutureByHeight(long height) {
         // 根据固定高度拉去TipSet
         CompletableFuture<TipSet> tipSetFuture = call(() -> lotusChainAPI.getTipSetByHeight(height, null));
