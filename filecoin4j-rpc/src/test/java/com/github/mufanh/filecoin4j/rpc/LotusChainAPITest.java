@@ -1,11 +1,8 @@
 package com.github.mufanh.filecoin4j.rpc;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.github.mufanh.filecoin4j.domain.*;
 import com.github.mufanh.filecoin4j.domain.Message;
 import com.github.mufanh.filecoin4j.domain.cid.Cid;
-import com.github.mufanh.filecoin4j.domain.exitcode.ExitCode;
 import com.github.mufanh.filecoin4j.domain.types.*;
 import com.github.mufanh.jsonrpc4j.Call;
 import com.github.mufanh.jsonrpc4j.Callback;
@@ -157,7 +154,7 @@ public class LotusChainAPITest extends AbstractLotusAPITest {
         for (Cid cid : cids) {
             com.github.mufanh.filecoin4j.domain.types.Message message = messages.get(cid);
             if (!message.getCid().getStr().equals(cid.getStr())) {
-                System.out.println(cid.getStr() + ":" + JSON.toJSONString(message));
+                System.out.println(cid.getStr() + ":" + message);
             }
         }
     }
